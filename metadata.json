@@ -1,0 +1,6 @@
+{
+  "name": "Cripto AI Scanner Pro",
+  "description": "Plataforma de monitoramento de criptoativos em tempo real com análise preditiva via Gemini AI.",
+  "requestFramePermissions": [],
+  "deployment": "optimized-for-cloud-hosting"
+}
