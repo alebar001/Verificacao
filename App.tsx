@@ -118,6 +118,27 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <div className="flex bg-black/40 p-1 rounded-xl border border-zinc-800 mr-2">
+            <button 
+              onClick={() => setFilter(FilterType.ALL)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${filter === FilterType.ALL ? 'bg-zinc-700 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              TODOS
+            </button>
+            <button 
+              onClick={() => setFilter(FilterType.STRONG_ENTRY)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${filter === FilterType.STRONG_ENTRY ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              ENTRADA FORTE
+            </button>
+            <button 
+              onClick={() => setFilter(FilterType.STRONG_EXIT)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${filter === FilterType.STRONG_EXIT ? 'bg-rose-500/20 text-rose-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              SAÍDA FORTE
+            </button>
+          </div>
+
           <div className="relative flex-grow min-w-[200px]">
             <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
             <input 

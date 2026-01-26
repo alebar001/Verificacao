@@ -43,7 +43,7 @@ const ScannerTable: React.FC<ScannerTableProps> = ({
   };
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-md">
+    <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-md custom-scrollbar">
       <table className="w-full text-left text-sm border-collapse">
         <thead>
           <tr className="bg-zinc-900/80 border-b border-zinc-800 text-zinc-400 uppercase text-[10px] tracking-widest font-bold">
@@ -53,7 +53,7 @@ const ScannerTable: React.FC<ScannerTableProps> = ({
             <th className="px-4 py-4 text-center">24h %</th>
             <th className="px-4 py-4 hidden md:table-cell">Volume</th>
             <th className="px-4 py-4 text-center">Sinal IA</th>
-            <th className="px-4 py-4 text-right pr-6">Tendência</th>
+            <th className="px-4 py-4 text-right pr-6">Proporção V/C</th>
           </tr>
         </thead>
         <tbody>
@@ -61,21 +61,29 @@ const ScannerTable: React.FC<ScannerTableProps> = ({
             const change = parseFloat(t.priceChangePercent);
             const isSelected = selectedSymbol === t.symbol;
             const isFav = favorites.includes(t.symbol);
+            
+            const buyPressure = Math.min(Math.max(50 + (change * 5), 5), 95);
+            const sellPressure = 100 - buyPressure;
 
             return (
               <tr 
                 key={t.symbol}
                 onClick={() => onSelect(t.symbol)}
-                className={`group cursor-pointer border-b border-zinc-800/50 transition-all hover:bg-zinc-800/40 ${isSelected ? 'bg-emerald-500/10 border-l-2 border-l-emerald-500' : ''}`}
+                className={`group cursor-pointer border-b border-zinc-800/50 transition-all duration-200 
+                  ${isSelected 
+                    ? 'bg-emerald-500/20 border-l-4 border-l-emerald-500 scale-[1.01] z-10 relative shadow-lg shadow-emerald-500/5' 
+                    : 'hover:bg-zinc-800/40 opacity-80 hover:opacity-100'}`}
               >
                 <td className="px-4 py-4" onClick={(e) => { e.stopPropagation(); toggleFavorite(t.symbol); }}>
                   <i className={`fa-star ${isFav ? 'fa-solid text-yellow-500' : 'fa-regular text-zinc-600'}`}></i>
                 </td>
                 <td className="px-4 py-4">
-                  <span className="font-bold text-gray-100">{t.symbol.replace('USDT', '')}</span>
+                  <span className={`font-bold ${isSelected ? 'text-white text-base' : 'text-gray-100'}`}>
+                    {t.symbol.replace('USDT', '')}
+                  </span>
                   <span className="ml-1 text-[10px] text-zinc-500">USDT</span>
                 </td>
-                <td className="px-4 py-4 mono font-medium">
+                <td className={`px-4 py-4 mono font-medium ${isSelected ? 'text-emerald-300' : ''}`}>
                   ${parseFloat(t.lastPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}
                 </td>
                 <td className={`px-4 py-4 text-center font-semibold ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -86,19 +94,23 @@ const ScannerTable: React.FC<ScannerTableProps> = ({
                 </td>
                 <td className="px-4 py-4 text-center">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-tighter ${
-                    change > 2.5 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                    change < -2.5 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
+                    change > 1.5 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                    change < -1.5 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
                     'bg-zinc-700/30 text-zinc-500'
                   }`}>
-                    {change > 2.5 ? 'COMPRA' : change < -2.5 ? 'VENDA' : 'NEUTRO'}
+                    {change > 1.5 ? 'COMPRA' : change < -1.5 ? 'VENDA' : 'NEUTRO'}
                   </span>
                 </td>
                 <td className="px-4 py-4 text-right pr-6">
-                   <div className="inline-flex w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                   <div className="inline-flex w-24 h-1.5 bg-rose-500 rounded-full overflow-hidden border border-zinc-800/50">
                       <div 
-                        className={`h-full ${change >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}
-                        style={{ width: `${Math.min(Math.abs(change) * 10, 100)}%` }}
+                        className="h-full bg-emerald-500 transition-all duration-500"
+                        style={{ width: `${buyPressure}%` }}
                       ></div>
+                   </div>
+                   <div className="flex justify-between w-24 mt-1 text-[8px] mono text-zinc-500">
+                      <span className={sellPressure > 50 ? 'text-rose-400 font-bold' : ''}>{sellPressure.toFixed(0)}% V</span>
+                      <span className={buyPressure > 50 ? 'text-emerald-400 font-bold' : ''}>{buyPressure.toFixed(0)}% C</span>
                    </div>
                 </td>
               </tr>

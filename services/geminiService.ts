@@ -10,48 +10,46 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
-const HISTORICAL_CONTEXT = `
-  CONTEXTO DE MERCADO (2018-2025):
-  - 2018: Grande correção (Bear Market), suporte em volumes baixos.
-  - 2020: Crash Covid seguido de expansão institucional.
-  - 2021: Bull Market, euforia, topos duplos.
-  - 2022-2023: Desalavancagem e lateralização profunda.
-  - 2024-2025: Ciclo de ETFs e Halving.
-  Analise o ativo atual considerando esses ciclos de 4 anos e a correlação com o BTC.
+const ESTRATEGIA_ASSERTIVA = `
+  ESTRATÉGIA DE MAXIMIZAÇÃO DE ACERTO (SMART MONEY CONCEPTS):
+  1. CONFLUÊNCIA OBRIGATÓRIA: O sinal 'BULLISH' exige que o 1h esteja acima da média de 24h E o 4h esteja em estrutura de alta.
+  2. CICLOS 2018-2025: Identifique se o preço está em zona de acumulação histórica ou topo de euforia (estresse de volume).
+  3. ANOMALIA DE VOLUME: Se o volume subir > 20% com preço estável, indique ABSORÇÃO. Se volume cair com preço subindo, indique EXAUSTÃO.
+  4. GERENCIAMENTO: O Stop Loss deve ser posicionado abaixo da última zona de liquidez identificada no 4h.
 `;
 
 export const getAIAnalysis = async (ticker: TickerData): Promise<AIAnalysisResult> => {
   const prompt = `
-    ATUE COMO UM ANALISTA QUANTITATIVO SENIOR DA BINANCE.
+    ATUE COMO UM ALGORITMO DE ALTA PRECISÃO (HFT QUANT).
     
-    DADOS ATUAIS DE MERCADO:
-    - Ativo: ${ticker.symbol}
-    - Preço Atual: ${ticker.lastPrice}
+    DADOS DO ATIVO EM TEMPO REAL:
+    - Símbolo: ${ticker.symbol}
+    - Último Preço: ${ticker.lastPrice}
     - Variação 24h: ${ticker.priceChangePercent}%
-    - Volume 24h (Quote): ${ticker.quoteVolume}
-    - Range 24h: ${ticker.lowPrice} - ${ticker.highPrice}
+    - Volume Relativo: ${ticker.quoteVolume}
+    - Volatilidade (High-Low): ${ticker.highPrice} / ${ticker.lowPrice}
 
-    ${HISTORICAL_CONTEXT}
+    ${ESTRATEGIA_ASSERTIVA}
 
-    TAREFA:
-    1. Baseado em padrões históricos desde 2018, este movimento atual parece uma armadilha (bull/bear trap) ou rompimento genuíno?
-    2. Avalie a exaustão do preço.
-    3. Forneça níveis técnicos (Alvo, Resistência, Suporte, Stop) com precisão matemática.
-    4. Identifique discrepâncias (Ex: Preço subindo mas volume relativo menor que a média histórica de 2018).
+    INSTRUÇÕES DE EXECUÇÃO:
+    - Analise a convergência dos tempos 1h, 4h e Diário.
+    - Se houver divergência (ex: 1h subindo, mas 1D em forte baixa), o sentimento DEVE ser 'NEUTRAL' ou 'BEARISH' (priorize a tendência maior).
+    - Defina alvos (Target) com base no próximo nível de liquidez institucional não testado.
+    - Redija o 'insight' e os alertas 'discrepancies' de forma técnica e direta em Português (PT-BR).
 
     REQUISITOS DE RESPOSTA (JSON):
-    - insight: Análise detalhada em português do Brasil.
+    - insight: Diagnóstico técnico da confluência multi-timeframe.
     - sentiment: BULLISH, BEARISH, NEUTRAL, EXTREME_OVERBOUGHT, EXTREME_OVERSOLD.
-    - confidence: 0-100.
+    - confidence: Score de 0-100 baseado na força da confluência.
     - levels: { target, resistance, support, stopLoss }.
-    - discrepancies: Lista de alertas técnicos.
+    - discrepancies: Lista de alertas sobre riscos de manipulação ou exaustão.
   `;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
     config: {
-      systemInstruction: "Você é um modelo treinado em dados históricos da Binance (2018-2025). Sua especialidade é detectar anomalias de volume e reversões de tendência baseadas em ciclos de mercado.",
+      systemInstruction: "Você é um motor de análise de alta assertividade. Sua função é filtrar ruídos de curto prazo e focar na tendência estrutural multi-timeframe. Responda sempre em PT-BR com precisão matemática.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -82,7 +80,7 @@ export const getAIAnalysis = async (ticker: TickerData): Promise<AIAnalysisResul
   try {
     return JSON.parse(response.text);
   } catch (e) {
-    console.error("Erro na análise neural:", e);
-    throw new Error("Falha ao processar dados históricos.");
+    console.error("Erro na estratégia neural:", e);
+    throw new Error("Erro ao processar estratégia de alta assertividade.");
   }
 };
